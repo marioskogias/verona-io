@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.8)
+project(my-verona-tests CXX)
+
+
+set(VERONA_PATH "external/verona")
+set(CMAKE_CXX_STANDARD 17)
+
+find_package(Threads REQUIRED)
+add_executable(server server.cpp)
+target_include_directories(server PRIVATE ${VERONA_PATH}/src/rt)
+target_include_directories(server PRIVATE ${VERONA_PATH}/src/rt/external/snmalloc/src)
+target_compile_options(server PRIVATE -mcx16 -march=native)
+target_compile_definitions(server PRIVATE -DSNMALLOC_CHEAP_CHECKS)
+target_link_libraries(server PRIVATE ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(server PRIVATE atomic)
