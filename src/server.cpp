@@ -44,8 +44,7 @@ struct serve : public VBehaviour<serve> {
 		} while(1); 
 
 		// Note that this connection would block
-		// will_block_in_io();
-
+		c->will_block_in_io();
 
 		// Schedule next
     Cown::schedule<serve>(c, c);
