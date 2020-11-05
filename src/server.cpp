@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <netinet/tcp.h>
 
 #include <verona.h>
 
@@ -100,12 +101,56 @@ struct listen_socket : public VCown<listen_socket> {
   }
 };
 
+struct accept_b : public VBehaviour<accept_b> {
+	struct listen_socket *s;
+
+	accept_b(struct listen_socket *s_) : s(s_) {}
+
+  void f()
+  {
+    int conn_sock, flags, one=1;
+
+    conn_sock = accept(s->sock, NULL, NULL);
+    if (conn_sock == -1) {
+      assert((errno == EAGAIN) || (errno == EWOULDBLOCK));
+      std::cout << "Tried to accept" << std::endl;
+      s->will_block_in_io();
+      Cown::schedule<accept_b>(s, s);
+      return;
+    }
+    flags = fcntl(conn_sock, F_GETFL, 0);
+    assert(flags >= 0);
+    flags = fcntl(conn_sock, F_SETFL, flags | O_NONBLOCK);
+    assert(flags >= 0);
+
+    if (setsockopt(conn_sock, IPPROTO_TCP, TCP_NODELAY, (void *) &one, sizeof(one))) {
+      perror("setsockopt(TCP_NODELAY)");
+      exit(1);
+    }
+
+    std::cout << "Received a connection" << std::endl;
+    assert(0);
+#if 0
+    conn = malloc(sizeof *conn);
+#if CONFIG_REGISTER_FD_TO_ALL_EPOLLS
+    conn->lock = 0;
+#endif
+    conn->fd = conn_sock;
+    conn->state = STATE_HEADER;
+    conn->buf_head = 0;
+    conn->buf_tail = 0;
+    epoll_ctl_add(conn_sock, conn);
+#endif
+  }
+};
+
 void open_server_conn(struct sockaddr_in *sin)
 {
   auto* alloc = ThreadAlloc::get();
   struct listen_socket *server_sock = new (alloc) listen_socket(sin);
 
-  // Schedule an accept behaviour
+  // Schedule an accept_b behaviour
+  Cown::schedule<accept_b>(server_sock, server_sock);
 }
 
 int main(int argc, char **argv)
