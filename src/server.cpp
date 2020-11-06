@@ -32,7 +32,9 @@ struct serve : public VBehaviour<serve> {
 		long to_spin, reply=42;
 		int ret;
 		
+		std::cout << "Serve Behaviour" << std::endl;
 		do {
+#if 0
 			ret = recv(c->fd, &to_spin, sizeof(to_spin), 0);
 			if (ret <= 0) {
 				std::cout << "Would block" << std::endl;
@@ -47,6 +49,19 @@ struct serve : public VBehaviour<serve> {
 
 			ret = send(c->fd, &reply, sizeof(long), MSG_NOSIGNAL);
 			assert(ret == sizeof(long));
+#endif
+
+			char buf[64];
+			ret = recv(c->fd, buf, 4, 0);
+			if (ret < 0) {
+				assert((errno == EAGAIN) || (errno == EWOULDBLOCK));
+				break;
+			}
+			std::cout << "I read " << ret << std::endl;
+			assert(ret == 4);
+
+			ret = send(c->fd, buf, 4, MSG_NOSIGNAL);
+			assert(ret == 4);
 
 		} while(1); 
 
@@ -108,6 +123,7 @@ struct accept_b : public VBehaviour<accept_b> {
 
   void f()
   {
+		std::cout << "Accept Behaviour" << std::endl;
     int conn_sock, flags, one=1;
 
     conn_sock = accept(s->sock, NULL, NULL);
@@ -129,18 +145,15 @@ struct accept_b : public VBehaviour<accept_b> {
     }
 
     std::cout << "Received a connection" << std::endl;
-    assert(0);
-#if 0
-    conn = malloc(sizeof *conn);
-#if CONFIG_REGISTER_FD_TO_ALL_EPOLLS
-    conn->lock = 0;
-#endif
-    conn->fd = conn_sock;
-    conn->state = STATE_HEADER;
-    conn->buf_head = 0;
-    conn->buf_tail = 0;
-    epoll_ctl_add(conn_sock, conn);
-#endif
+
+		// Create a cown, register the new conn with the efd, and schedule a serve
+		auto* alloc = ThreadAlloc::get();
+		struct connection *conn = new (alloc) connection(conn_sock);
+    Scheduler::register_io_fd(conn_sock, conn, EPOLLIN|EPOLLERR);
+		Cown::schedule<serve>(conn, conn);
+
+		// Schedule accept again
+		Cown::schedule<accept_b>(s, s);
   }
 };
 
