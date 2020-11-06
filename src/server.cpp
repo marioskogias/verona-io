@@ -9,6 +9,22 @@
 
 #define BACKLOG 8192
 
+// ugly, but here to deal with include mess
+void verona::rt::IOThread::loop()
+{
+  int nfds, i;
+  struct epoll_event events[MAX_EVENTS];
+  Cown *cown;
+
+  nfds = epoll_wait(efd, events, MAX_EVENTS, -1);
+  for (i = 0; i < nfds; i++) {
+    assert(events[i].data.ptr);
+    cown = static_cast<Cown *>(events[i].data.ptr);
+    cown->io_blocked = false;
+    cown->schedule();
+  }
+}
+
 using namespace verona::rt;
 
 struct serve;
@@ -187,6 +203,22 @@ int main(int argc, char **argv)
   sched.set_fair(true);
   sched.init(nr_cpu);
 
+#ifdef ASIO
+  IOThread *t = new IOThread;
+
+  sched.register_io_thread(t);
+  open_server_conn(&listen_addr);
+  // spawn a thread to do epoll wait
+  auto thr = std::thread([=] {
+      while(1) {
+        t->loop();
+      }
+      });
+
+  sched.run();
+  thr.join();
+#else
   sched.run_with_startup(&open_server_conn, &listen_addr);
+#endif
   return 0;
 }
