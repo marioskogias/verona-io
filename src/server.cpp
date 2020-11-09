@@ -9,6 +9,7 @@
 
 #define BACKLOG 8192
 
+#ifdef ASIO
 // ugly, but here to deal with include mess
 void verona::rt::IOThread::loop()
 {
@@ -24,6 +25,7 @@ void verona::rt::IOThread::loop()
     cown->schedule();
   }
 }
+#endif
 
 using namespace verona::rt;
 
