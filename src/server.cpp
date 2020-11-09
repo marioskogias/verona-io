@@ -21,7 +21,7 @@ void verona::rt::IOThread::loop()
 	for (i = 0; i < nfds; i++) {
 		assert(events[i].data.ptr);
 		cown = static_cast<Cown *>(events[i].data.ptr);
-		if (cown->io_blocked) {
+		if (!cown->is_scheduled) {
 			cown->io_blocked = false;
 			cown->schedule();
 		}
@@ -115,7 +115,7 @@ struct listen_socket : public VCown<listen_socket> {
 			perror("listen");
 			exit(1);
 		}
-		Scheduler::register_io_fd(sock, this, EPOLLIN|EPOLLET);
+		Scheduler::register_io_fd(sock, this, EPOLLIN);
 	}
 };
 
@@ -151,7 +151,7 @@ struct accept_b : public VBehaviour<accept_b> {
 		// Create a cown, register the new conn with the efd, and schedule a serve
 		auto* alloc = ThreadAlloc::get();
 		struct connection *conn = new (alloc) connection(conn_sock);
-		Scheduler::register_io_fd(conn_sock, conn, EPOLLIN|EPOLLERR|EPOLLET);
+		Scheduler::register_io_fd(conn_sock, conn, EPOLLIN|EPOLLERR);
 		Cown::schedule<serve>(conn, conn);
 
 		// Schedule accept again
@@ -166,6 +166,9 @@ void open_server_conn(struct sockaddr_in *sin)
 
 	// Schedule an accept_b behaviour
 	Cown::schedule<accept_b>(server_sock, server_sock);
+#ifdef ASIO
+	Cown::release(alloc, server_sock);
+#endif
 }
 
 int main(int argc, char **argv)
@@ -186,7 +189,7 @@ int main(int argc, char **argv)
 
 	auto& sched = Scheduler::get();
 	Scheduler::set_detect_leaks(true);
-	//sched.set_fair(true);
+	sched.set_fair(true);
 	sched.init(nr_cpu);
 
 #ifdef ASIO
