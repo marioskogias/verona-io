@@ -31,6 +31,18 @@ void verona::rt::IOThread::loop()
 
 using namespace verona::rt;
 
+#ifdef FLOATINGIO
+struct epoller : public VCown<epoller> {
+  int efd;
+
+  epoller()
+  {
+    efd = epoll_create1(0);
+    assert(efd>0);
+  }
+};
+#endif
+
 struct serve;
 
 struct connection : public VCown<connection> {
@@ -76,10 +88,20 @@ struct serve : public VBehaviour<serve> {
 	}
 };
 
+#ifdef FLOATINGIO
+struct epoller;
+#endif
 struct listen_socket : public VCown<listen_socket> {
 	int sock;
+#ifdef FLOATINGIO
+  struct epoller *e;
+#endif
 
+#ifdef FLOATINGIO
+	listen_socket(struct sockaddr_in *sin, struct epoller *e_) : e(e_)
+#else
 	listen_socket(struct sockaddr_in *sin)
+#endif
 	{
 		int one, flags;
 
@@ -115,7 +137,9 @@ struct listen_socket : public VCown<listen_socket> {
 			perror("listen");
 			exit(1);
 		}
+#if defined(STATICIO) || defined(ASIO)
 		Scheduler::register_io_fd(sock, this, EPOLLIN);
+#endif
 	}
 };
 
@@ -146,12 +170,23 @@ struct accept_b : public VBehaviour<accept_b> {
 			exit(1);
 		}
 
-		//std::cout << "Received a connection" << std::endl;
+		std::cout << "Received a connection" << std::endl;
 
 		// Create a cown, register the new conn with the efd, and schedule a serve
 		auto* alloc = ThreadAlloc::get();
 		struct connection *conn = new (alloc) connection(conn_sock);
+#if defined(ASIO) || defined(STATICIO)
 		Scheduler::register_io_fd(conn_sock, conn, EPOLLIN|EPOLLERR);
+#else
+    int ret;
+    struct epoll_event ev;
+
+    ev.events = EPOLLIN|EPOLLERR;
+    ev.data.ptr = conn;
+    ret = epoll_ctl(s->e->efd, EPOLL_CTL_ADD, conn_sock, &ev);
+    assert(!ret);
+    std::cout << "Just registered client fd" << std::endl;
+#endif
 		Cown::schedule<serve>(conn, conn);
 
 		// Schedule accept again
@@ -159,6 +194,7 @@ struct accept_b : public VBehaviour<accept_b> {
 	}
 };
 
+#if defined(ASIO) || defined(STATICIO)
 void open_server_conn(struct sockaddr_in *sin)
 {
 	auto* alloc = ThreadAlloc::get();
@@ -166,10 +202,57 @@ void open_server_conn(struct sockaddr_in *sin)
 
 	// Schedule an accept_b behaviour
 	Cown::schedule<accept_b>(server_sock, server_sock);
-#ifdef ASIO
-	Cown::release(alloc, server_sock);
-#endif
 }
+#endif
+
+#ifdef FLOATINGIO
+struct network_check;
+struct network_check : public VBehaviour<network_check> {
+  struct epoller *poller;
+
+  network_check(struct epoller *e) : poller(e) {}
+
+  void f()
+  {
+    int nfds, i;
+    struct epoll_event events[MAX_EVENTS];
+    Cown *cown;
+
+    nfds = epoll_wait(poller->efd, events, MAX_EVENTS, 0);
+
+    for (i = 0; i < nfds; i++) {
+      assert(events[i].data.ptr);
+      cown = static_cast<Cown *>(events[i].data.ptr);
+      if (!cown->is_scheduled) {
+        cown->io_blocked = false;
+        cown->exposed_schedule();
+      }
+    }
+    Cown::schedule<network_check>(poller, poller);
+  }
+};
+
+struct server_sock_register : public VBehaviour<server_sock_register> {
+  struct epoller *e;
+  struct listen_socket *s;
+  uint32_t events;
+
+  server_sock_register(struct epoller *e_, struct listen_socket *s_, uint32_t events_)
+    : e(e_), s(s_), events(events_) {}
+
+  void f()
+  {
+    int ret;
+    struct epoll_event ev;
+
+    ev.events = events;
+    ev.data.ptr = s;
+    ret = epoll_ctl(e->efd, EPOLL_CTL_ADD, s->sock, &ev);
+    assert(!ret);
+    std::cout << "Just registered fd" << std::endl;
+  }
+};
+#endif
 
 int main(int argc, char **argv)
 {
@@ -193,21 +276,36 @@ int main(int argc, char **argv)
 	sched.init(nr_cpu);
 
 #ifdef ASIO
-	IOThread *t = new IOThread;
+  IOThread *t = new IOThread;
 
-	sched.register_io_thread(t);
-	open_server_conn(&listen_addr);
-	// spawn a thread to do epoll wait
-	auto thr = std::thread([=] {
-			while(1) {
-			t->loop();
-			}
-			});
+  sched.register_io_thread(t);
+  open_server_conn(&listen_addr);
+  // spawn a thread to do epoll wait
+  auto thr = std::thread([=] {
+      while(1) {  t->loop(); }
+      });
 
-	sched.run();
-	thr.join();
-#else
+  sched.run();
+  thr.join();
+#endif
+
+#ifdef STATICIO
 	sched.run_with_startup(&open_server_conn, &listen_addr);
 #endif
+
+#ifdef FLOATINGIO
+  auto* alloc = ThreadAlloc::get();
+
+  for (int i=0;i<nr_cpu;i++) {
+    struct epoller *e = new (alloc) epoller;
+    struct listen_socket *server_sock = new (alloc) listen_socket(&listen_addr, e);
+    Cown::schedule<accept_b>(server_sock, server_sock);
+    Cown::schedule<server_sock_register>(e, e, server_sock, EPOLLIN);
+    Cown::schedule<network_check>(e, e);
+  }
+
+  sched.run();
+#endif
+
 	return 0;
 }
