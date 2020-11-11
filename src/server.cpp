@@ -79,6 +79,18 @@ struct serve : public VBehaviour<serve> {
 
 			ret = send(c->fd, &reply, sizeof(long), MSG_NOSIGNAL);
 			assert(ret == sizeof(long));
+#if 0
+			// 4 byte echo
+			char buf[64];
+			ret = recv(c->fd, buf, 4, 0);
+			if (ret <= 0) {
+				printf("Ret is %d\n", ret);
+				break;
+			}
+			printf("\n\nI received %s\n\n", buf);
+
+			ret = send(c->fd, buf, 4, MSG_NOSIGNAL);
+#endif
 		} while(1); 
 
 		// Note that this connection would block
@@ -138,7 +150,7 @@ struct listen_socket : public VCown<listen_socket> {
 			perror("listen");
 			exit(1);
 		}
-#if defined(STATICIO) || defined(ASIO)
+#if defined(STATICIO) || defined(ASIO) || defined(TOKENIO)
 		Scheduler::register_io_fd(sock, this, EPOLLIN);
 #endif
 	}
@@ -176,9 +188,10 @@ struct accept_b : public VBehaviour<accept_b> {
 		// Create a cown, register the new conn with the efd, and schedule a serve
 		auto* alloc = ThreadAlloc::get();
 		struct connection *conn = new (alloc) connection(conn_sock);
-#if defined(ASIO) || defined(STATICIO)
+#if defined(ASIO) || defined(STATICIO) || defined(TOKENIO)
 		Scheduler::register_io_fd(conn_sock, conn, EPOLLIN|EPOLLERR);
-#else
+#endif
+#ifdef FLOATINGIO
     int ret;
     struct epoll_event ev;
 
@@ -195,7 +208,7 @@ struct accept_b : public VBehaviour<accept_b> {
 	}
 };
 
-#if defined(ASIO) || defined(STATICIO)
+#if defined(ASIO) || defined(STATICIO) || defined(TOKENIO)
 void open_server_conn(struct sockaddr_in *sin)
 {
 	auto* alloc = ThreadAlloc::get();
@@ -272,7 +285,7 @@ int main(int argc, char **argv)
 
 	auto& sched = Scheduler::get();
 	Scheduler::set_detect_leaks(true);
-	//sched.set_fair(true);
+	sched.set_fair(true);
 	sched.init(nr_cpu);
 
 #ifdef ASIO
@@ -289,7 +302,7 @@ int main(int argc, char **argv)
   thr.join();
 #endif
 
-#ifdef STATICIO
+#if defined(STATICIO) || defined(TOKENIO)
 	sched.run_with_startup(&open_server_conn, &listen_addr);
 #endif
 
