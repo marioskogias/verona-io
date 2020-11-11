@@ -34,6 +34,7 @@ using namespace verona::rt;
 #ifdef FLOATINGIO
 struct epoller : public VCown<epoller> {
   int efd;
+  int conn_count=0;
 
   epoller()
   {
@@ -185,7 +186,7 @@ struct accept_b : public VBehaviour<accept_b> {
     ev.data.ptr = conn;
     ret = epoll_ctl(s->e->efd, EPOLL_CTL_ADD, conn_sock, &ev);
     assert(!ret);
-    std::cout << "Just registered client fd" << std::endl;
+
 #endif
 		Cown::schedule<serve>(conn, conn);
 
@@ -214,21 +215,20 @@ struct network_check : public VBehaviour<network_check> {
 
   void f()
   {
-    int nfds, i;
-    struct epoll_event events[MAX_EVENTS];
-    Cown *cown;
+	  int nfds, i;
+	  struct epoll_event events[MAX_EVENTS];
+	  Cown *cown;
 
-    nfds = epoll_wait(poller->efd, events, MAX_EVENTS, 0);
-
-    for (i = 0; i < nfds; i++) {
-      assert(events[i].data.ptr);
-      cown = static_cast<Cown *>(events[i].data.ptr);
-      if (!cown->is_scheduled) {
-        cown->io_blocked = false;
-        cown->exposed_schedule();
-      }
-    }
-    Cown::schedule<network_check>(poller, poller);
+	  nfds = epoll_wait(poller->efd, events, MAX_EVENTS, 0);
+	  for (i = 0; i < nfds; i++) {
+		  assert(events[i].data.ptr);
+		  cown = static_cast<Cown *>(events[i].data.ptr);
+		  if (!cown->is_scheduled) {
+			  cown->io_blocked = false;
+			  cown->exposed_schedule();
+		  }
+	  }
+	  Cown::schedule<network_check>(poller, poller);
   }
 };
 
@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 
 	auto& sched = Scheduler::get();
 	Scheduler::set_detect_leaks(true);
-	sched.set_fair(true);
+	//sched.set_fair(true);
 	sched.init(nr_cpu);
 
 #ifdef ASIO
