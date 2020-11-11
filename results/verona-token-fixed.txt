@@ -1,0 +1,269 @@
+My command 'sudo bash -c 'ulimit -c unlimited && source /tmp/t-makog/lancet/venv/bin/activate && lancet -- -s 10.190.228.240:8080 -t 8 -c 256 -o 512 -i exp -p TCP -r synthetic:fixed:100 -a 3''
+My command 'sudo bash -c 'ulimit -c unlimited && source /tmp/t-makog/lancet/venv/bin/activate && lancet -- -s 10.190.228.240:8080 -t 8 -c 256 -o 512 -i exp -p TCP -r synthetic:fixed:100 -a 3''
+DEBUG:/tmp/t-makog/lancet/venv/lib/python3.6/site-packages/manager/agentcontroller.py:Agent launch command: "['/tmp/t-makog/lancet/venv/lib/python3.6/site-packages/manager/assets/agent', '-s', '10.190.228.240:8080', '-t', '8', '-c', '256', '-o', '512', '-i', 'exp', '-p', 'TCP', '-r', 'synthetic:fixed:100', '-a', '3']"
+DEBUG:/tmp/t-makog/lancet/venv/lib/python3.6/site-packages/manager/agentcontroller.py:Agent launch command: "['/tmp/t-makog/lancet/venv/lib/python3.6/site-packages/manager/assets/agent', '-s', '10.190.228.240:8080', '-t', '8', '-c', '256', '-o', '512', '-i', 'exp', '-p', 'TCP', '-r', 'synthetic:fixed:100', '-a', '3']"
+10000 110000 10000
+call fixed pattern
+Load rate is 10000
+Latency rate = 0
+Will run for 15 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.4240535467421296, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.47820932775357505, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 24962 samples
+There are 25003 samples
+Spearman 0.010183532686696257 0.10764638401203618
+Spearman 0.008369742314014274 0.18570824153046528
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+149880	9991.906076082885	79935.24860866308	79934.71528034304
+#Avg Lat	50th	90th	95th	99th
+123.835	114.229(114.192, 114.264)	144.48(141.239, 147.357)	184.902(182.858, 187.255)	217.462(216.412, 218.738)
+#Avg Lat	50th	90th	95th	99th
+123.713	114.287(114.245, 114.328)	146.727(143.895, 150.363)	184.866(182.786, 187.335)	217.474(216.574, 218.665)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+123.774	114.258(114.218, 114.296)	145.603(142.567, 148.86)	184.884(182.822, 187.295)	217.468(216.493, 218.701)
+
+Increase load
+call fixed pattern
+Load rate is 20000
+Latency rate = 0
+Will run for 8 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.652714061306142, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=1.550390637471537, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 26561 samples
+There are 26599 samples
+Spearman -0.002254822236392479 0.7132782042456094
+Spearman 0.02626778686119664 1.8313148351832794e-05
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+159473	19933.746258821084	159469.97007056867	159466.9701275676
+#Avg Lat	50th	90th	95th	99th
+133.454	114.535(114.501, 114.564)	185.956(184.496, 187.187)	205.8(204.758, 206.857)	226.897(223.297, 236.089)
+#Avg Lat	50th	90th	95th	99th
+133.385	114.543(114.51, 114.572)	184.664(183.205, 186.351)	205.295(204.14, 206.434)	226.001(223.227, 236.874)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+133.419	114.539(114.505, 114.568)	185.31(183.85, 186.769)	205.547(204.449, 206.645)	226.449(223.262, 236.481)
+
+Increase load
+call fixed pattern
+Load rate is 30000
+Latency rate = 0
+Will run for 5 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.6040261256200665, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.5109481952056285, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 24952 samples
+There are 25088 samples
+Spearman 0.03145149675854211 6.729118353893774e-07
+Spearman 0.0299070909216115 2.1608203805243044e-06
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+150131	30025.401324324772	240203.21059459817	240177.61127554008
+#Avg Lat	50th	90th	95th	99th
+143.326	115.127(115.088, 115.167)	199.143(198.063, 200.311)	213.434(212.604, 214.318)	274.298(266.439, 285.806)
+#Avg Lat	50th	90th	95th	99th
+143.02	115.21(115.161, 115.256)	200.203(199.223, 201.213)	213.641(213.085, 214.356)	272.71(264.102, 282.733)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+143.173	115.168(115.124, 115.211)	199.673(198.643, 200.762)	213.537(212.844, 214.337)	273.504(265.27, 284.269)
+
+Increase load
+call fixed pattern
+Load rate is 40000
+Latency rate = 0
+Will run for 4 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.2619644768310536, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.17148374784733278, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 26780 samples
+There are 26776 samples
+Spearman 0.03307017375656026 6.214295564365222e-08
+Spearman 0.0569287785109526 1.129719612073184e-20
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+160664	40164.4837907369	321315.8703258952	321315.8703258952
+#Avg Lat	50th	90th	95th	99th
+156.898	125.023(123.621, 126.063)	210.401(209.633, 211.163)	220.87(220.235, 221.61)	328.023(321.783, 392.491)
+#Avg Lat	50th	90th	95th	99th
+155.315	126.263(124.866, 127.475)	209.173(208.557, 210.107)	219.869(219.262, 220.503)	318.936(313.69, 326.538)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+156.106	125.643(124.243, 126.769)	209.787(209.095, 210.635)	220.369(219.748, 221.056)	323.479(317.736, 359.514)
+
+Increase load
+call fixed pattern
+Load rate is 50000
+Latency rate = 0
+Will run for 3 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=1.149074045248426, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.43632532634819654, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 24786 samples
+There are 25000 samples
+Spearman 0.07822471017642588 5.987096526414825e-35
+Spearman 0.09183023167954814 5.894602418950027e-48
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+149355	49783.70562365378	398269.64498923026	398269.64498923026
+#Avg Lat	50th	90th	95th	99th
+167.613	147.435(146.339, 148.461)	217.874(217.292, 218.57)	251.446(246.334, 256.979)	397.16(374.458, 425.177)
+#Avg Lat	50th	90th	95th	99th
+167.126	149.326(148.33, 150.412)	217.508(216.86, 218.251)	252.979(248.998, 258.312)	387.586(366.749, 417.729)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+167.369	148.38(147.334, 149.436)	217.691(217.076, 218.41)	252.212(247.666, 257.645)	392.373(370.603, 421.453)
+
+Increase load
+call fixed pattern
+Load rate is 60000
+Latency rate = 0
+Will run for 3 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=1.6481133936930519, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=1.0127669131443326, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 29865 samples
+There are 29836 samples
+Spearman 0.22182546113089335 0.0
+Spearman 0.22204522971595725 0.0
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+179692	59894.97746421974	479159.8197137579	479175.8190844493
+#Avg Lat	50th	90th	95th	99th
+225.674	173.753(172.604, 174.688)	301.454(298.288, 304.775)	385.551(375.827, 396.023)	1763.578(1651.504, 1888.58)
+#Avg Lat	50th	90th	95th	99th
+224.458	173.936(172.961, 174.888)	303.837(300.996, 306.799)	389.462(378.894, 399.492)	1712.433(1562.264, 1844.806)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+225.066	173.844(172.782, 174.788)	302.645(299.642, 305.787)	387.506(377.36, 397.757)	1738.005(1606.884, 1866.693)
+
+Increase load
+call fixed pattern
+Load rate is 70000
+Latency rate = 0
+Will run for 3 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=1.0951518196961842, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.2597858065555556, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 30000 samples
+There are 30000 samples
+Spearman 0.6601943979410935 0.0
+Spearman 0.6505923404351364 0.0
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+210169	70053.95149898237	560431.6119918589	560439.6117198681
+#Avg Lat	50th	90th	95th	99th
+687.101	299.539(296.15, 302.982)	1495.522(1448.695, 1545.215)	2748.399(2654.603, 2849.235)	6284.466(6073.553, 6571.052)
+#Avg Lat	50th	90th	95th	99th
+704.526	300.498(297.508, 303.382)	1526.688(1474.793, 1589.485)	2868.796(2773.963, 2961.712)	6687.33(6387.271, 6988.492)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+695.813	300.018(296.829, 303.182)	1511.105(1461.744, 1567.35)	2808.597(2714.283, 2905.473)	6485.898(6230.412, 6779.772)
+
+Increase load
+call fixed pattern
+Load rate is 80000
+Latency rate = 0
+Will run for 2 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.5813114774011865, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=1.0322905342288777, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.955]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 26045 samples
+There are 25978 samples
+Spearman 0.05046996266606329 3.9779250702539953e-16
+Spearman 0.0605129476540786 1.4535650480475663e-22
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+156315	78154.60827949365	625236.8662359492	640824.2895012884
+#Avg Lat	50th	90th	95th	99th
+86169.161	55517.168(54669.756, 56396.023)	200952.972(197915.952, 204076.452)	267882.085(262057.522, 273648.959)	488025.309(472515.019, 503302.913)
+#Avg Lat	50th	90th	95th	99th
+88718.953	57770.689(56759.436, 58648.592)	203398.889(200405.603, 207221.171)	274836.413(268668.58, 280852.529)	506457.598(491618.61, 523668.177)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+87444.057	56643.928(55714.596, 57522.307)	202175.93(199160.777, 205648.811)	271359.249(265363.051, 277250.744)	497241.453(482066.814, 513485.545)
+
+Increase load
+call fixed pattern
+Load rate is 90000
+Latency rate = 0
+Will run for 2 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.3030639410109188, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.4496917040697781, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 26341 samples
+There are 25981 samples
+Spearman 0.2196282245835678 2.9244994948135226e-281
+Spearman 0.19753710400215402 5.694485779780746e-230
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+156965	78479.43930186723	627835.5144149378	717800.0057997738
+#Avg Lat	50th	90th	95th	99th
+449329.901	371491.218(366520.36, 377076.709)	953973.911(944006.046, 966016.915)	1.134186348e+06(1.121990355e+06, 1.145637924e+06)	1.416025037e+06(1.39917055e+06, 1.440547657e+06)
+#Avg Lat	50th	90th	95th	99th
+466309.698	388135.062(382472.353, 393418.945)	984275.601(973359.064, 994667.222)	1.157682007e+06(1.146881214e+06, 1.171380215e+06)	1.445254082e+06(1.429388969e+06, 1.464268681e+06)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+457819.799	379813.14(374496.356, 385247.827)	969124.756(958682.555, 980342.068)	1.145934177e+06(1.134435784e+06, 1.158509069e+06)	1.430639559e+06(1.414279759e+06, 1.452408169e+06)
+
+Increase load
+call fixed pattern
+Load rate is 100000
+Latency rate = 0
+Will run for 2 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=0.5026130858987017, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=0.6264847925194772, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 25486 samples
+There are 26248 samples
+Spearman 0.5921134621785432 0.0
+Spearman 0.5792001166256913 0.0
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+156972	78483.41004746844	627867.2803797475	800757.575000025
+#Avg Lat	50th	90th	95th	99th
+1.052960671e+06	925200.782(913185.712, 937764.969)	2.115080181e+06(2.098704059e+06, 2.131906634e+06)	2.443081615e+06(2.418999908e+06, 2.466174266e+06)	2.923707748e+06(2.896985002e+06, 2.955433446e+06)
+#Avg Lat	50th	90th	95th	99th
+1.140985477e+06	1.009260915e+06(995428.105, 1.022157971e+06)	2.29731812e+06(2.277505525e+06, 2.31761504e+06)	2.620100553e+06(2.597741516e+06, 2.645012199e+06)	3.084154574e+06(3.060311074e+06, 3.107860527e+06)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+1.096973074e+06	967230.848(954306.908, 979961.47)	2.20619915e+06(2.188104792e+06, 2.224760837e+06)	2.531591084e+06(2.508370712e+06, 2.555593232e+06)	3.003931161e+06(2.978648038e+06, 3.031646986e+06)
+
+Increase load
+call fixed pattern
+Load rate is 110000
+Latency rate = 0
+Will run for 2 sec
+Will start load for 30000 samples with 40.0 sampling rate
+Will start load for 30000 samples with 40.0 sampling rate
+AndersonResult(statistic=3.4467959682440323, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+AndersonResult(statistic=3.842444241424573, critical_values=array([0.921, 1.077, 1.34 , 1.605, 1.956]), significance_level=array([15. , 10. ,  5. ,  2.5,  1. ]))
+There are 24014 samples
+There are 26394 samples
+Spearman 0.8527684363186341 0.0
+Spearman 0.8505473552712614 0.0
+Overall IA check: 2
+#ReqCount	QPS	RxBw	TxBw
+157102	78548.09372053234	628384.7497642587	812553.9355043863
+#Avg Lat	50th	90th	95th	99th
+1.268117728e+06	1.179482222e+06(1.162177872e+06, 1.198742918e+06)	2.791966815e+06(2.763042326e+06, 2.822164283e+06)	3.375386997e+06(3.320719024e+06, 3.436101088e+06)	5.36102174e+06(5.247661735e+06, 5.48628873e+06)
+#Avg Lat	50th	90th	95th	99th
+1.354171235e+06	1.336808031e+06(1.317437382e+06, 1.356270267e+06)	2.874765316e+06(2.845120089e+06, 2.908279112e+06)	3.547618494e+06(3.500441561e+06, 3.598617569e+06)	4.775749359e+06(4.720892389e+06, 4.83450762e+06)
+Aggregate latency
+#Avg Lat	50th	90th	95th	99th
+1.311144481e+06	1.258145126e+06(1.239807627e+06, 1.277506592e+06)	2.833366065e+06(2.804081207e+06, 2.865221697e+06)	3.461502745e+06(3.410580292e+06, 3.517359328e+06)	5.068385549e+06(4.984277062e+06, 5.160398175e+06)
+
+Increase load
