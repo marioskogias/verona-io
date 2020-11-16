@@ -49,10 +49,20 @@ def readfn2():
 
         schedule(write_rest, (write_endpoint), buf)
 
+def acceptfn():
+    conn = accept(sock.read_endpoint)
+    if conn > 0:
+        schedule(readfn, (conn.read_endpoint, conn.write_endpoint))
+        # or
+        # schedule(readfn2, (conn.read_endpoint))
+    schedule(acceptfn, (sock.read_endpoint))
+
 
 def main():
-    read_endpoint, write_endpoint = TCPSocket()
-    schedule(readfn, (read_endpoint, write_endpoint))
+    sock = TCPSocket() # socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    bind(sock, info)
+    listen(sock)
 
-    # Or alternatively
-    schedule(readfn2, (read_endpoint))
+    schedule(acceptfn, (sock.read_endpoint))
+
+    sched.run()
