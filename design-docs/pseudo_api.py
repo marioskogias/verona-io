@@ -37,6 +37,7 @@ def readfn():
         res = write(write_endpoint, buf, N)
         if res < N:
             schdule(write_rest, (write_endpoint), buf)
+            break
 
 # Alternative read function called with read_endpoint acquired only
 def readfn2():
