@@ -147,12 +147,12 @@ struct Poller : public VCown<Poller>
     }
   }
 
-#ifdef FIXED
+#if defined(FIXED)
   void notified(Object* o)
   {
     process();
   }
-#elif FLOATING
+#elif defined(FLOATING)
   void floating_process()
   {
     process();
@@ -164,5 +164,49 @@ struct Poller : public VCown<Poller>
 
 int main(int argc, char **argv)
 {
+	int nr_cpu;
+  int port;
 
+	std::cout << "hello!" << std::endl;
+	if (argc < 3) {
+		fprintf(stderr, "Usage: ./server <thread_count> <port>\n");
+		return -1;
+	}
+
+	nr_cpu = atoi(argv[1]);
+	port = atoi(argv[2]);
+
+	auto& sched = Scheduler::get();
+	Scheduler::set_detect_leaks(true);
+	sched.set_fair(true);
+	sched.init(nr_cpu);
+
+#if defined(ONE)
+#if defined(FIXED)
+  schedule_lambda([&](){
+      Poller *p = new Poller(port);
+      sched.poller_add(p);
+      });
+#elif defined(FLOATING)
+  Poller *p = new Poller(port);
+  schedule_lambda(p, [=](){ p->floating_process(); });
+#endif
+#elif defined(MANY)
+#if defined(FIXED)
+  // Leverage that the lambdas will be scheduled round robin on the scheduler
+  // threads and every scheduler thread will get assigned a poller
+  for (int i=0;i<nr_cpu;i++)
+    schedule_lambda([&](){
+        Poller *p = new Poller(port);
+        sched.poller_add(p);
+        });
+#elif defined(FLOATING)
+  for (int i=0;i<nr_cpu;i++) {
+    Poller *p = new Poller(port);
+    schedule_lambda(p, [=](){ p->floating_process(); });
+  }
+#endif
+#endif
+
+  sched.run();
 }
